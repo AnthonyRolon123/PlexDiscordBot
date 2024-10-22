@@ -265,7 +265,7 @@ const skipTo = async (query) => {
                 commandID: 0,
                 'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
             },
-            timeout: 500,
+            timeout: 2000,
         })
     } catch (e) {}
 
