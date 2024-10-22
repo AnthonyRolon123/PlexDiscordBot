@@ -18,23 +18,23 @@ configs.client.on('interactionCreate', async (interaction) => {
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            await skipMovie();
             interaction.reply('Movie was skipped');
+            await skipMovie();
             break;
         case 'previous':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
+            interaction.reply('Playing previous movie');
             await seekToBeginning()
             await previousMovie();
-            interaction.reply('Playing previous movie');
             break;
         case 'restart': 
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            await seekToBeginning();
             interaction.reply('Restarting movie');
+            await seekToBeginning();
             break;
         case 'nothing':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
@@ -46,16 +46,16 @@ configs.client.on('interactionCreate', async (interaction) => {
                 if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                     return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
                 };
-                await resumeMovie();
                 interaction.reply('Resuming movie');
+                await resumeMovie();
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+        if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            await pauseMovie();
             interaction.reply('Pausing movie');
+            await pauseMovie();
             break;
         case 'play':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
