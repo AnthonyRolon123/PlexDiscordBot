@@ -42,12 +42,14 @@ configs.client.on('interactionCreate', async (interaction) => {
             };
             break;
         case 'resume': 
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
-            await resumeMovie();
-            interaction.reply('Resuming movie');
-            break;
+            try {
+                if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+                    return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+                };
+                await resumeMovie();
+                interaction.reply('Resuming movie');
+                break;
+            } catch (e) { console.log(e) }
         case 'pause': 
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
