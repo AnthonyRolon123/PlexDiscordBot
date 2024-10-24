@@ -30,7 +30,11 @@ const commands = [
   {
     name: 'play',
     description: 'Play a movie'
-  }
+  },
+  {
+    name: 'now',
+    description: 'Now playing'
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
@@ -38,7 +42,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 (async () => {
   try {
     console.log('Registering slash commands...');
-
+    
     await rest.put(
       Routes.applicationCommands(
         process.env.CLIENT_ID

@@ -11,6 +11,7 @@ configs.client.on('ready', (c) => {
 
 configs.client.on('interactionCreate', async (interaction) => {
     if(!interaction.isChatInputCommand()) return;
+    let playing;
 
     switch(interaction.commandName)
     {
@@ -18,23 +19,37 @@ configs.client.on('interactionCreate', async (interaction) => {
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            interaction.reply('Movie was skipped');
-            await skipMovie();
+            await interaction.deferReply();
+
+            try {
+                await skipMovie();
+                playing = await nowPlaying();
+            } catch (e) {}
+
+            interaction.followUp(`Movie was skipped. Now playing ${playing}`, {ephermal: true});
             break;
         case 'previous':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            interaction.reply('Playing previous movie');
-            await seekToBeginning()
-            await previousMovie();
+            await interaction.deferReply();
+            try {
+                await seekToBeginning()
+                await previousMovie();
+            } catch (e) {}
+            playing = await nowPlaying();
+
+            interaction.followUp(`Playing previous movie. Now playing ${playing}`, {ephermal: true});
             break;
         case 'restart': 
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            interaction.reply('Restarting movie');
-            await seekToBeginning();
+            await interaction.deferReply();
+            try {
+                await seekToBeginning();
+            } catch (e) {}
+            interaction.followUp('Restarting movie', {ephermal: true});
             break;
         case 'nothing':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
@@ -46,22 +61,28 @@ configs.client.on('interactionCreate', async (interaction) => {
                 if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                     return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
                 };
-                interaction.reply('Resuming movie');
-                await resumeMovie();
+                await interaction.deferReply();
+                try {
+                    await resumeMovie();
+                } catch (e) {}
+                interaction.followUp('Resuming movie', {ephermal: true});
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
-        if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            interaction.reply('Pausing movie');
-            await pauseMovie();
+            await interaction.deferReply();
+            try {
+                await pauseMovie();
+            } catch (e) {}
+            interaction.followUp('Pausing movie', {ephermal: true});
             break;
         case 'play':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            interaction.reply('what movie do you wanna watch');
+            interaction.reply('what movie do you want to watch', {ephermal: true});
 
             const filter = (response) => {
                 return response.author.id === interaction.user.id
@@ -70,22 +91,39 @@ configs.client.on('interactionCreate', async (interaction) => {
             const collector = interaction.channel.createMessageCollector({ filter, time: 15000});
 
             collector.on('collect', async (query) => {
-                interaction.followUp('Playing movie')
-                await skipTo(query);
+                try {
+                    await skipTo(query);
+                    interaction.followUp('Playing movie', {ephemeral: true})
+                } catch (e) {
+                    interaction.followUp('Could not find movie', {ephemeral: true})
+                }
+
             })
 
             collector.on('end', (collected) => {
                 if (collected.size === 0) {
-                    interaction.followUp('You did not respond in time!');
+                    interaction.followUp('You did not respond in time!', {ephemeral: true});
                 }
             });
 
-            break;  
+            break;
+        case 'now':
+            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+            };
+            await interaction.deferReply();
+            try {
+                playing = await nowPlaying();
+            } catch (e) {}
+
+            interaction.followUp(`Now playing: ${playing}`, {ephemeral: true});
+            break;
     }
 });
 
 const skipMovie = async () => {
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
         headers: {
@@ -102,6 +140,7 @@ const skipMovie = async () => {
 
 const previousMovie = async () => {
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipPrevious`,
         headers: {
@@ -118,6 +157,7 @@ const previousMovie = async () => {
 
 const seekToBeginning = async () => {
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/seekTo`,
         headers: {
@@ -135,6 +175,7 @@ const seekToBeginning = async () => {
 
 const pauseMovie = async () => {
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/pause`,
         headers: {
@@ -152,6 +193,7 @@ const pauseMovie = async () => {
 
 const resumeMovie = async () => {
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/play`,
         headers: {
@@ -170,6 +212,7 @@ const resumeMovie = async () => {
 const skipTo = async (query) => {
     //get playQueue id
     let PQID = (await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/playQueues`,
         headers: {
@@ -181,6 +224,7 @@ const skipTo = async (query) => {
 
     //refresh/get queue
     let queue = (await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
         headers: {
@@ -194,6 +238,7 @@ const skipTo = async (query) => {
 
     //get movieID from search
     let movieID = (await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/search`,
         headers: {
@@ -207,7 +252,7 @@ const skipTo = async (query) => {
     })).data.MediaContainer?.Metadata[0]?.ratingKey;
 
     if(!movieID){
-        return;
+        throw new Error('could not find movie')
     }
 
     let queueObj = {};
@@ -218,7 +263,8 @@ const skipTo = async (query) => {
     //if movie is in queue delete
     if(queueObj[movieID]){
         await axios({
-            method: 'delete',
+        timeout: 2000,
+        method: 'delete',
             url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}/items/${queueObj[movieID].PQItemID}`,
             headers: {
                 'X-Plex-Token': process.env.PLEX_TOKEN,
@@ -232,6 +278,7 @@ const skipTo = async (query) => {
 
     //update playQueue
     await axios({
+        timeout: 2000,
         method: 'put',
         url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
         headers: {
@@ -270,6 +317,7 @@ const skipTo = async (query) => {
     } catch (e) {}
 
     await axios({
+        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
         headers: {
@@ -282,6 +330,23 @@ const skipTo = async (query) => {
             'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
         }
     })
+}
+
+const nowPlaying = async () => {
+    let res = await axios({
+        timeout: 2000,
+        method: 'get',
+        url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
+        headers: {
+            'X-Plex-Token': process.env.PLEX_TOKEN,
+            'Accept': 'application/json',
+            'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
+        },
+    })
+
+    console.dir(res.data, {depth: 99})
+
+    return res.data.MediaContainer.Metadata[0].title;
 }
 
 configs.client.login(process.env.TOKEN);
