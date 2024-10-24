@@ -23,6 +23,7 @@ configs.client.on('interactionCreate', async (interaction) => {
 
             try {
                 await skipMovie();
+                setTimeout(()=>{}, 2000)
                 playing = await nowPlaying();
             } catch (e) {}
 
