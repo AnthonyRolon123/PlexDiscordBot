@@ -23,11 +23,9 @@ configs.client.on('interactionCreate', async (interaction) => {
 
             try {
                 await skipMovie();
-                setTimeout(()=>{}, 2000)
-                playing = await nowPlaying();
             } catch (e) {}
 
-            interaction.followUp(`Movie was skipped. Now playing ${playing}`, {ephermal: true});
+            interaction.followUp(`Movie was skipped. Now playing ${await nowPlaying()}`, {ephermal: true});
             break;
         case 'previous':
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
