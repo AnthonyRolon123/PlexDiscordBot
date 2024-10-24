@@ -122,7 +122,7 @@ configs.client.on('interactionCreate', async (interaction) => {
 
 const skipMovie = async () => {
     await axios({
-        timeout: 2000,
+        timeout: 5000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
         headers: {
@@ -139,7 +139,7 @@ const skipMovie = async () => {
 
 const previousMovie = async () => {
     await axios({
-        timeout: 2000,
+        timeout: 5000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipPrevious`,
         headers: {
