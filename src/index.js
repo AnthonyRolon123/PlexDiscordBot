@@ -237,7 +237,6 @@ const skipTo = async (query) => {
 
     //get movieID from search
     let movieID = (await axios({
-        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/search`,
         headers: {
@@ -333,7 +332,6 @@ const skipTo = async (query) => {
 
 const nowPlaying = async () => {
     let res = await axios({
-        timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
         headers: {
