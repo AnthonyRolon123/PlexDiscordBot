@@ -33,7 +33,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             };
             await interaction.deferReply();
             try {
-                await seekToBeginning()
+                await seekToBeginning();
                 await previousMovie();
             } catch (e) {}
             playing = await nowPlaying();
@@ -92,10 +92,10 @@ configs.client.on('interactionCreate', async (interaction) => {
             collector.on('collect', async (query) => {
                 try {
                     await skipTo(query);
-                    interaction.followUp('Playing movie', {ephemeral: true})
                 } catch (e) {
-                    interaction.followUp('Could not find movie', {ephemeral: true})
                 }
+                playing = await nowPlaying();
+                interaction.followUp(`Playing ${playing}`, {ephemeral: true})
 
             })
 
@@ -236,7 +236,7 @@ const skipTo = async (query) => {
     })).data.MediaContainer.Metadata
 
     //get movieID from search
-    let movieID = (await axios({
+    let movieID = await (await axios({
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/search`,
         headers: {
