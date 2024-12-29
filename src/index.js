@@ -11,26 +11,25 @@ configs.client.on('ready', (c) => {
 
 configs.client.on('interactionCreate', async (interaction) => {
     if(!interaction.isChatInputCommand()) return;
+
+    if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+        return interaction.reply({content: 'You do not have permission to use this command.', flags: MessageFlags.Ephemeral });
+    };
+
     let playing;
 
     switch(interaction.commandName)
     {
         case 'skip':
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             await interaction.deferReply();
 
             try {
                 await skipMovie();
             } catch (e) {}
 
-            interaction.followUp(`Movie was skipped. Now playing ${await nowPlaying()}`, {ephermal: true});
+            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
             break;
         case 'previous':
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             await interaction.deferReply();
             try {
                 await seekToBeginning();
@@ -38,49 +37,34 @@ configs.client.on('interactionCreate', async (interaction) => {
             } catch (e) {}
             playing = await nowPlaying();
 
-            interaction.followUp(`Playing previous movie. Now playing ${playing}`, {ephermal: true});
+            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
             break;
         case 'restart': 
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             await interaction.deferReply();
             try {
                 await seekToBeginning();
             } catch (e) {}
-            interaction.followUp('Restarting movie', {ephermal: true});
+            interaction.followUp({content: `Restarting Movie`, flags: MessageFlags.Ephemeral });
             break;
         case 'nothing':
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             break;
         case 'resume': 
             try {
-                if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                    return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-                };
                 await interaction.deferReply();
                 try {
                     await resumeMovie();
                 } catch (e) {}
-                interaction.followUp('Resuming movie', {ephermal: true});
+                interaction.followUp({content: `Resume Movie`, flags: MessageFlags.Ephemeral });
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             await interaction.deferReply();
             try {
                 await pauseMovie();
             } catch (e) {}
-            interaction.followUp('Pausing movie', {ephermal: true});
+            interaction.followUp({content: `Pausing Movie`, flags: MessageFlags.Ephemeral });
             break;
         case 'play':
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-            };
             interaction.reply('what movie do you want to watch', {ephermal: true});
 
             const filter = (response) => {
@@ -95,13 +79,12 @@ configs.client.on('interactionCreate', async (interaction) => {
                 } catch (e) {
                 }
                 playing = await nowPlaying();
-                interaction.followUp(`Playing ${playing}`, {ephemeral: true})
-
+                interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral })
             })
 
             collector.on('end', (collected) => {
                 if (collected.size === 0) {
-                    interaction.followUp('You did not respond in time!', {ephemeral: true});
+                    interaction.followUp({content: 'You did not respond in time!', flags: MessageFlags.Ephemeral });
                 }
             });
 
@@ -115,7 +98,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 playing = await nowPlaying();
             } catch (e) {}
 
-            interaction.followUp(`Now playing: ${playing}`, {ephemeral: true});
+            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
             break;
     }
 });
