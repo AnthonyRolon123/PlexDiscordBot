@@ -14,7 +14,7 @@ configs.client.on('interactionCreate', async (interaction) => {
     if(!interaction.isChatInputCommand()) return;
 
     if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-        return interaction.reply({content: 'You do not have permission to use this command.', flags: MessageFlags.Ephemeral });
+        return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
     };
 
     let playing;
@@ -28,7 +28,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 await skipMovie();
             } catch (e) {}
 
-            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
+            interaction.followUp({content: `Playing ${playing}`, ephemeral: true  });
             break;
         case 'previous':
             await interaction.deferReply();
@@ -38,14 +38,14 @@ configs.client.on('interactionCreate', async (interaction) => {
             } catch (e) {}
             playing = await nowPlaying();
 
-            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
+            interaction.followUp({content: `Playing ${playing}`, ephemeral: true  });
             break;
         case 'restart': 
             await interaction.deferReply();
             try {
                 await seekToBeginning();
             } catch (e) {}
-            interaction.followUp({content: `Restarting Movie`, flags: MessageFlags.Ephemeral });
+            interaction.followUp({content: `Restarting Movie`, ephemeral: true  });
             break;
         case 'nothing':
             break;
@@ -55,7 +55,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 try {
                     await resumeMovie();
                 } catch (e) {}
-                interaction.followUp({content: `Resume Movie`, flags: MessageFlags.Ephemeral });
+                interaction.followUp({content: `Resume Movie`, ephemeral: true  });
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
@@ -63,7 +63,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             try {
                 await pauseMovie();
             } catch (e) {}
-            interaction.followUp({content: `Pausing Movie`, flags: MessageFlags.Ephemeral });
+            interaction.followUp({content: `Pausing Movie`, ephemeral: true  });
             break;
         case 'play':
             interaction.reply('what movie do you want to watch', {ephermal: true});
@@ -80,12 +80,12 @@ configs.client.on('interactionCreate', async (interaction) => {
                 } catch (e) {
                 }
                 playing = await nowPlaying();
-                interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral })
+                interaction.followUp({content: `Playing ${playing}`, ephemeral: true  })
             })
 
             collector.on('end', (collected) => {
                 if (collected.size === 0) {
-                    interaction.followUp({content: 'You did not respond in time!', flags: MessageFlags.Ephemeral });
+                    interaction.followUp({content: 'You did not respond in time!', ephemeral: true  });
                 }
             });
 
@@ -99,7 +99,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 playing = await nowPlaying();
             } catch (e) {}
 
-            interaction.followUp({content: `Playing ${playing}`, flags: MessageFlags.Ephemeral });
+            interaction.followUp({content: `Playing ${playing}`, ephemeral: true  });
             break;
     }
 });
