@@ -3,6 +3,7 @@ dotenv.config();
 
 import axios from 'axios';
 import configs from './config.js';
+import { MessageFlags } from 'discord.js';
 
 //letting user know its online
 configs.client.on('ready', (c) => {
