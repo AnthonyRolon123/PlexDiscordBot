@@ -3,7 +3,6 @@ dotenv.config();
 
 import axios from 'axios';
 import configs from './config.js';
-import { MessageFlags } from 'discord.js';
 
 //letting user know its online
 configs.client.on('ready', (c) => {
@@ -22,7 +21,7 @@ configs.client.on('interactionCreate', async (interaction) => {
     switch(interaction.commandName)
     {
         case 'skip':
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
 
             try {
                 await skipMovie();
@@ -31,7 +30,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             interaction.followUp({content: `Playing ${playing}`, ephemeral: true  });
             break;
         case 'previous':
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             try {
                 await seekToBeginning();
                 await previousMovie();
@@ -41,7 +40,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             interaction.followUp({content: `Playing ${playing}`, ephemeral: true  });
             break;
         case 'restart': 
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             try {
                 await seekToBeginning();
             } catch (e) {}
@@ -51,7 +50,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             break;
         case 'resume': 
             try {
-                await interaction.deferReply();
+                await interaction.deferReply({ ephemeral: true });
                 try {
                     await resumeMovie();
                 } catch (e) {}
@@ -59,7 +58,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             try {
                 await pauseMovie();
             } catch (e) {}
@@ -94,7 +93,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
                 return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
             };
-            await interaction.deferReply();
+            await interaction.deferReply({ ephemeral: true });
             try {
                 playing = await nowPlaying();
             } catch (e) {}
