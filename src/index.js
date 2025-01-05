@@ -29,7 +29,9 @@ configs.client.on('interactionCreate', async (interaction) => {
                 await skipMovie();
             } catch (e) {}
 
-            interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  });
+            playing = await nowPlaying();
+
+            interaction.followUp({content: `Skipped. Now Playing ${playing}`, ephemeral: isEphemeral  });
             break;
         case 'previous':
             await interaction.deferReply({ ephemeral: isEphemeral });
