@@ -328,8 +328,6 @@ const nowPlaying = async () => {
         },
     })
 
-    console.dir(res.data, {depth: 99})
-
     return res.data.MediaContainer.Metadata[0].title;
 }
 
