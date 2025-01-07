@@ -5,10 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "register": "node src/register-commands.js",
-    "testing": "node test.js"
+    "test": "node test.js"
   },
   "keywords": [],
   "author": "",

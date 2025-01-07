@@ -29,6 +29,8 @@ configs.client.on('interactionCreate', async (interaction) => {
                 await skipMovie();
             } catch (e) {}
 
+            await refreshPlayQueue();
+
             playing = await nowPlaying();
 
             interaction.followUp({content: `Skipped. Now Playing ${playing}`, ephemeral: isEphemeral  });
@@ -193,6 +195,37 @@ const resumeMovie = async () => {
             offset: 0
         }
     })
+}
+
+const refreshPlayQueue  = async () => {
+    let PQID = (await axios({
+        method: 'get',
+        url: `http://${process.env.IP}:${process.env.PORT}/playQueues`,
+        headers: {
+            'X-Plex-Token': process.env.PLEX_TOKEN,
+            'Accept': 'application/json',
+            'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
+        },
+    })).data.MediaContainer.PlayQueue[0].id
+
+    try{
+        await axios({
+            method: 'get',
+            url: `http://${process.env.IP}:${process.env.PORT}/player/playback/refreshPlayQueue`,
+            headers: {
+                'X-Plex-Token': process.env.PLEX_TOKEN,
+                'Accept': 'application/json',
+                'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            },
+            params: {
+                playQueueID: PQID,
+                type: 'video',
+                commandID: 0,
+                'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            },
+            timeout: 2000,
+        })
+    } catch (e) {}
 }
 
 const skipTo = async (query) => {
