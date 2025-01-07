@@ -41,6 +41,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 await seekToBeginning();
                 await previousMovie();
             } catch (e) {}
+            await refreshPlayQueue();
             playing = await nowPlaying();
 
             interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  });
@@ -84,6 +85,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                     await skipTo(query);
                 } catch (e) {
                 }
+                await refreshPlayQueue();
                 playing = await nowPlaying();
                 interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  })
             })
