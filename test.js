@@ -21,22 +21,16 @@ const main = async () => {
 
     let res = await axios({
         method: 'get',
-        url: `http://${process.env.IP}:${process.env.PORT}/playQueues/playback`,
+        url: `http://${process.env.IP}:${process.env.PORT}/search`,
         headers: {
             'X-Plex-Token': process.env.PLEX_TOKEN,
             'Accept': 'application/json',
-            'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
         },
         params: {
-            type: 'video',
-            commandID: 0,
-            // playQueueID: 2532,
             'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
-        },
-        // timeout: 5000
+            query: `the matrix`
+        }
     })
-
-    console.log('1st')
 
     //'/library/metadata/6414'
     //ratingKey: '6414'

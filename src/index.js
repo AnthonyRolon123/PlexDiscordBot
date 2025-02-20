@@ -108,6 +108,32 @@ configs.client.on('interactionCreate', async (interaction) => {
 
             interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  });
             break;
+        case 'search':
+            interaction.reply('what movie do you want to search for', {ephermal: isEphemeral});
+
+            filter = (response) => {
+                return response.author.id === interaction.user.id
+            }
+
+            collector = interaction.channel.createMessageCollector({ filter, time: 15000});
+
+            collector.on('collect', async (query) => {
+                try {
+                    await skipTo(query);
+                } catch (e) {
+                }
+                await refreshPlayQueue();
+                playing = await nowPlaying();
+                interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  })
+            })
+
+            collector.on('end', (collected) => {
+                if (collected.size === 0) {
+                    interaction.followUp({content: 'You did not respond in time!', ephemeral: isEphemeral  });
+                }
+            });
+
+            break;
     }
 });
 
@@ -354,6 +380,7 @@ const skipTo = async (query) => {
 
 const nowPlaying = async () => {
     let res = await axios({
+        timeou: 20000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
         headers: {
