@@ -379,7 +379,6 @@ const skipTo = async (query) => {
 
 const nowPlaying = async () => {
     let res = await axios({
-        timeou: 20000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
         headers: {
