@@ -378,17 +378,21 @@ const skipTo = async (query) => {
 }
 
 const nowPlaying = async () => {
-    let res = await axios({
-        method: 'get',
-        url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
-        headers: {
-            'X-Plex-Token': process.env.PLEX_TOKEN,
-            'Accept': 'application/json',
-            'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
-        },
-    })
-
-    return res.data.MediaContainer.Metadata[0].title;
+    try {
+        let res = await axios({
+            method: 'get',
+            url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
+            headers: {
+                'X-Plex-Token': process.env.PLEX_TOKEN,
+                'Accept': 'application/json',
+                'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            },
+        })
+        return res.data.MediaContainer.Metadata[0].title;
+    } catch (error) {
+        return 'idk';
+    }
+    
 }
 
 configs.client.login(process.env.TOKEN);
