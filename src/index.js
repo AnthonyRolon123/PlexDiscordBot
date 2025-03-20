@@ -31,9 +31,7 @@ configs.client.on('interactionCreate', async (interaction) => {
 
             await refreshPlayQueue();
 
-            playing = await nowPlaying();
-
-            interaction.followUp({content: `Skipped. Now Playing ${playing}`, ephemeral: isEphemeral  });
+            interaction.followUp({content: `Skipped.`, ephemeral: isEphemeral  });
             break;
         case 'previous':
             await interaction.deferReply({ ephemeral: isEphemeral });
@@ -42,9 +40,8 @@ configs.client.on('interactionCreate', async (interaction) => {
                 await previousMovie();
             } catch (e) {}
             await refreshPlayQueue();
-            playing = await nowPlaying();
 
-            interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  });
+            interaction.followUp({content: `Playing previous movie`, ephemeral: isEphemeral  });
             break;
         case 'restart': 
             await interaction.deferReply({ ephemeral: isEphemeral });
@@ -61,7 +58,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 try {
                     await resumeMovie();
                 } catch (e) {}
-                interaction.followUp({content: `Resume Movie`, ephemeral: isEphemeral  });
+                interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
                 break;
             } catch (e) { console.log(e) }
         case 'pause': 
@@ -140,6 +137,7 @@ configs.client.on('interactionCreate', async (interaction) => {
 const skipMovie = async () => {
     await axios({
         method: 'get',
+        timeout: '5000',
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
         headers: {
          'X-Plex-Token': process.env.PLEX_TOKEN,
