@@ -82,7 +82,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 }
                 await refreshPlayQueue();
                 playing = await nowPlaying();
-                interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  })
+                await interaction.followUp({content: `Playing ${playing}`, ephemeral: isEphemeral  })
             })
 
             collector.on('end', (collected) => {
