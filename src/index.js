@@ -26,27 +26,27 @@ configs.client.on('interactionCreate', async (interaction) => {
             await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
-                await skipMovie();
+                skipMovie();
             } catch (e) {}
 
-            // await refreshPlayQueue();
+            await refreshPlayQueue();
 
-            interaction.followUp({content: `Skipped.`, ephemeral: isEphemeral  });
+            interaction.followUp({content: `Skipped`, ephemeral: isEphemeral  });
             break;
         case 'previous':
             await interaction.deferReply({ ephemeral: isEphemeral });
             try {
                 await seekToBeginning();
-                await previousMovie();
+                previousMovie();
             } catch (e) {}
-            // await refreshPlayQueue();
+            await refreshPlayQueue();
 
             interaction.followUp({content: `Playing previous movie`, ephemeral: isEphemeral  });
             break;
         case 'restart': 
             await interaction.deferReply({ ephemeral: isEphemeral });
             try {
-                await seekToBeginning();
+                seekToBeginning();
             } catch (e) {}
             interaction.followUp({content: `Restarting Movie`, ephemeral: isEphemeral  });
             break;
@@ -56,7 +56,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             try {
                 await interaction.deferReply({ ephemeral: isEphemeral });
                 try {
-                    await resumeMovie();
+                    resumeMovie();
                 } catch (e) {}
                 interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
                 break;
