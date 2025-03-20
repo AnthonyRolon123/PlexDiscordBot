@@ -253,7 +253,7 @@ const refreshPlayQueue  = async () => {
 
 const skipTo = async (query) => {
     //get playQueue id
-    let PQID = (await axios({
+    let PQID = await (await axios({
         timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/playQueues`,
@@ -265,7 +265,7 @@ const skipTo = async (query) => {
     })).data.MediaContainer.PlayQueue[0].id
 
     //refresh/get queue
-    let queue = (await axios({
+    let queue = await (await axios({
         timeout: 2000,
         method: 'get',
         url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
@@ -355,7 +355,7 @@ const skipTo = async (query) => {
             },
             timeout: 2000,
         })
-    } catch (e) {}
+    } catch (e) {console.log(e)}
 
     await axios({
         timeout: 2000,
