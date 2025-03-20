@@ -53,14 +53,12 @@ configs.client.on('interactionCreate', async (interaction) => {
         case 'nothing':
             break;
         case 'resume': 
+            await interaction.deferReply({ ephemeral: isEphemeral });
             try {
-                await interaction.deferReply({ ephemeral: isEphemeral });
-                try {
-                    resumeMovie();
-                } catch (e) {}
-                interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
-                break;
-            } catch (e) { console.log(e) }
+                resumeMovie();
+            } catch (e) {}
+            interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
+            break;
         case 'pause': 
             await interaction.deferReply({ ephemeral: isEphemeral });
             try {
