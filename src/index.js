@@ -67,7 +67,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             interaction.followUp({content: `Pausing Movie`, ephemeral: isEphemeral  });
             break;
         case 'play':
-            await interaction.followUp({content: `not working atm`, ephemeral: isEphemeral  })
+            await interaction.reply(`not working atm`, {ephemeral: isEphemeral  })
             break;
             interaction.reply('what movie do you want to watch', {ephermal: isEphemeral});
 
