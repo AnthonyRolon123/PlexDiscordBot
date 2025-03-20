@@ -137,7 +137,7 @@ configs.client.on('interactionCreate', async (interaction) => {
 const skipMovie = async () => {
     await axios({
         method: 'get',
-        timeout: '2000',
+        timeout: 2000,
         url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
         headers: {
          'X-Plex-Token': process.env.PLEX_TOKEN,
