@@ -14,9 +14,11 @@ configs.client.on('ready', (c) => {
 configs.client.on('interactionCreate', async (interaction) => {
     if(!interaction.isChatInputCommand()) return;
 
-    if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-        return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
-    };
+    if(!interaction.member.id == '394972756141146124'){
+        if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+            return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
+        };
+    }
 
     let playing;
 
@@ -255,30 +257,36 @@ const refreshPlayQueue  = async () => {
 
 const skipTo = async (query) => {
     //get playQueue id
-    let PQID = await (await axios({
-        timeout: 2000,
-        method: 'get',
-        url: `http://${process.env.IP}:${process.env.PORT}/playQueues`,
-        headers: {
-            'X-Plex-Token': process.env.PLEX_TOKEN,
-            'Accept': 'application/json',
-            'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
-        },
-    })).data.MediaContainer.PlayQueue[0].id
+    let PQID;
+    try {
+        PQID = await (await axios({
+            timeout: 2000,
+            method: 'get',
+            url: `http://${process.env.IP}:${process.env.PORT}/playQueues`,
+            headers: {
+                'X-Plex-Token': process.env.PLEX_TOKEN,
+                'Accept': 'application/json',
+                'X-Plex-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            },
+        })).data.MediaContainer.PlayQueue[0].id
+    } catch (e) {};
 
     //refresh/get queue
-    let queue = await (await axios({
-        timeout: 2000,
-        method: 'get',
-        url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
-        headers: {
-            'X-Plex-Token': process.env.PLEX_TOKEN,
-            'Accept': 'application/json',
-        },
-        params: {
-            'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
-        }
-    })).data.MediaContainer.Metadata
+    let queue;
+    try{
+        queue = await (await axios({
+            timeout: 2000,
+            method: 'get',
+            url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
+            headers: {
+                'X-Plex-Token': process.env.PLEX_TOKEN,
+                'Accept': 'application/json',
+            },
+            params: {
+                'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            }
+        })).data.MediaContainer.Metadata
+    } catch (e) {};
 
     //get movieID from search
     let movieID = await (await axios({
@@ -305,40 +313,44 @@ const skipTo = async (query) => {
 
     //if movie is in queue delete
     if(queueObj[movieID]){
+        try{
+            await axios({
+            timeout: 2000,
+            method: 'delete',
+                url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}/items/${queueObj[movieID].PQItemID}`,
+                headers: {
+                    'X-Plex-Token': process.env.PLEX_TOKEN,
+                    'Accept': 'application/json',
+                },
+                params: {
+                    'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+                }
+            })
+        } catch (e) {};
+    }
+
+    //update playQueue
+    try {
         await axios({
-        timeout: 2000,
-        method: 'delete',
-            url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}/items/${queueObj[movieID].PQItemID}`,
+            timeout: 2000,
+            method: 'put',
+            url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
             headers: {
                 'X-Plex-Token': process.env.PLEX_TOKEN,
                 'Accept': 'application/json',
             },
             params: {
+                next: 1,
+                type: 'video',
+                repeat: 1,
+                continous: 1,
+                commandID: 0,
                 'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+                offset: 0,
+                uri: `server://${process.env.MACHINE_IDENT}/com.plexapp.plugins.library/library/metadata/${movieID}`
             }
         })
-    }
-
-    //update playQueue
-    await axios({
-        timeout: 2000,
-        method: 'put',
-        url: `http://${process.env.IP}:${process.env.PORT}/playQueues/${PQID}`,
-        headers: {
-            'X-Plex-Token': process.env.PLEX_TOKEN,
-            'Accept': 'application/json',
-        },
-        params: {
-            next: 1,
-            type: 'video',
-            repeat: 1,
-            continous: 1,
-            commandID: 0,
-            'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
-            offset: 0,
-            uri: `server://${process.env.MACHINE_IDENT}/com.plexapp.plugins.library/library/metadata/${movieID}`
-        }
-    })
+    } catch (e) {};
 
     try{
         await axios({
@@ -357,22 +369,24 @@ const skipTo = async (query) => {
             },
             timeout: 2000,
         })
-    } catch (e) {console.log(e)}
+    } catch (e) {}
 
-    await axios({
-        timeout: 2000,
-        method: 'get',
-        url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
-        headers: {
-            'X-Plex-Token': process.env.PLEX_TOKEN,
-            'Accept': 'application/json',
-        },
-        params: {
-            type: 'video',
-            commandID: 0,
-            'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
-        }
-    })
+    try {
+        await axios({
+            timeout: 2000,
+            method: 'get',
+            url: `http://${process.env.IP}:${process.env.PORT}/player/playback/skipNext`,
+            headers: {
+                'X-Plex-Token': process.env.PLEX_TOKEN,
+                'Accept': 'application/json',
+            },
+            params: {
+                type: 'video',
+                commandID: 0,
+                'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
+            }
+        })
+    } catch (e) {};
 }
 
 const nowPlaying = async () => {
