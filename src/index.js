@@ -14,11 +14,9 @@ configs.client.on('ready', (c) => {
 configs.client.on('interactionCreate', async (interaction) => {
     if(!interaction.isChatInputCommand()) return;
 
-    if(!interaction.member.id == '394972756141146124'){
-        if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-            return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
-        };
-    }
+    if(!interaction.member.roles.cache.has(process.env.ROLE_ID) && interaction.user.id !== '394972756141146124'){
+        return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
+    };
 
     let playing;
 
@@ -77,7 +75,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 return response.author.id === interaction.user.id
             }
 
-            const collector = interaction.channel.createMessageCollector({ filter, time: 15000});
+            const collector = interaction.channel.createMessageCollector({ filter, max: 1, time: 15000});
 
             collector.on('collect', async (query) => {
                 try {
@@ -114,7 +112,7 @@ configs.client.on('interactionCreate', async (interaction) => {
                 return response.author.id === interaction.user.id
             }
 
-            collector = interaction.channel.createMessageCollector({ filter, time: 15000});
+            collector = interaction.channel.createMessageCollector({ filter, max: 1, time: 15000});
 
             collector.on('collect', async (query) => {
                 try {
@@ -367,7 +365,7 @@ const skipTo = async (query) => {
                 commandID: 0,
                 'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
             },
-            timeout: 2000,
+            timeout: 5000,
         })
     } catch (e) {}
 
