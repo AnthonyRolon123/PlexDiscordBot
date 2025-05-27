@@ -97,9 +97,9 @@ configs.client.on('interactionCreate', async (interaction) => {
 
             break;
         case 'now':
-            if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
-                return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: isEphemeral });
-            };
+            // if(!interaction.member.roles.cache.has(process.env.ROLE_ID)){
+            //     return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: isEphemeral });
+            // };
             await interaction.deferReply({ ephemeral: isEphemeral });
             try {
                 playing = await nowPlaying();
