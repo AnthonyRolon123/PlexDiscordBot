@@ -18,41 +18,49 @@ configs.client.on('interactionCreate', async (interaction) => {
         return interaction.reply({content: 'You do not have permission to use this command.', ephemeral: true  });
     };
 
+    await interaction.deferReply({ ephemeral: isEphemeral });
+    let botResponse = 'Action Failed';
+
     switch(interaction.commandName)
     {
         case 'skip':
 
-            await interaction.deferReply({ ephemeral: isEphemeral });
+            // await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
                 await playback('skipNext');
+                botResponse = 'Skipped Movie';
             } catch (e) {}
 
-            interaction.followUp({content: `Skipped`, ephemeral: isEphemeral  });
+            // interaction.followUp({content: `Skipped`, ephemeral: isEphemeral  });
 
             break;
         
         case 'resume': 
-            await interaction.deferReply({ ephemeral: isEphemeral });
+            // await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
                 await playback('play');
+                botResponse = 'Resumed Movie';
             } catch (e) {}
 
-            interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
+            // interaction.followUp({content: `Resuming Movie`, ephemeral: isEphemeral  });
 
             break;
         case 'pause': 
-            await interaction.deferReply({ ephemeral: isEphemeral });
+            // await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
                 await playback('pause');
+                botResponse = 'Paused Movie';
             } catch (e) {}
 
-            interaction.followUp({content: `Pausing Movie`, ephemeral: isEphemeral  });
+            // interaction.followUp({content: `Pausing Movie`, ephemeral: isEphemeral  });
 
             break;
     }
+
+    interaction.followUp({content: botResponse, ephemeral: isEphemeral  });
 });
 
 const playback = async (command) => {
