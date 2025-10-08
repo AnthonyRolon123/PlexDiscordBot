@@ -40,7 +40,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             // await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
-                await playback('play');
+                playback('play');
                 botResponse = 'Resumed Movie';
             } catch (e) {}
 
@@ -51,7 +51,7 @@ configs.client.on('interactionCreate', async (interaction) => {
             // await interaction.deferReply({ ephemeral: isEphemeral });
 
             try {
-                await playback('pause');
+                playback('pause');
                 botResponse = 'Paused Movie';
             } catch (e) {}
 
