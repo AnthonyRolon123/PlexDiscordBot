@@ -9,12 +9,20 @@ const commands = [
   },
   {
     name: "resume",
-    description: "Resuming movie",
+    description: "Resume movie",
   },
   {
     name: "pause",
     description: "Pause movie",
   },
+  {
+    name: 'play',
+    description: 'Play a movie'
+  },
+  {
+    name: 'start',
+    description: 'Start or refresh the queue of movies playing'
+  }
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
