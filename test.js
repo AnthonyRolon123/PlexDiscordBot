@@ -13,7 +13,7 @@ const nowPlaying = async () => {
         },
         params: {
             'X-Plex-Target-Client-Identifier': process.env.PLEX_CLIENT_ID,
-            query: 'bee movie',
+            query: 'boondock saints',
         }
     })
 
@@ -71,5 +71,5 @@ const nowPlaying = async () => {
 
 
 // await main();
-console.dir(await nowPlaying(), {depth: 99});
+console.dir(nowPlaying(), {depth: 99});
 // console.log(await nowPlaying());
