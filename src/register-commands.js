@@ -22,6 +22,14 @@ const commands = [
   {
     name: 'start',
     description: 'Start or refresh the queue of movies playing'
+  },
+  {
+    name: 'search',
+    description: 'Search for a movie'
+  },
+  {
+    name: 'now',
+    description: 'See what movie is playing'
   }
 ];
 
@@ -31,10 +39,17 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
   try {
     console.log("Registering slash commands...");
 
+    // await rest.put(
+    //   Routes.applicationCommands(
+    //     process.env.CLIENT_ID,
+    //   ),
+    //   { body: commands }
+    // );
+
     await rest.put(
-      Routes.applicationCommands(
-        process.env.CLIENT_ID
-        // process.env.GUILD_ID
+      Routes.applicationGuildCommands(
+        process.env.CLIENT_ID,
+        process.env.GUILD_ID
       ),
       { body: commands }
     );

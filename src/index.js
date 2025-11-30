@@ -35,17 +35,17 @@ configs.client.on("interactionCreate", async (interaction) => {
                 ephermal: isEphemeral,
             });
 
-            const filter = (response) => {
+            const playFilter = (response) => {
                 return response.author.id === interaction.user.id;
             };
 
-            const collector = await interaction.channel.createMessageCollector({
-                filter,
+            const playCollector = await interaction.channel.createMessageCollector({
+                filter: playFilter,
                 max: 1,
                 time: 15000,
             });
 
-            await collector.on("collect", async (query) => {
+            await playCollector.on("collect", async (query) => {
 
                 query = query.content;
                 try {
@@ -77,7 +77,7 @@ configs.client.on("interactionCreate", async (interaction) => {
                 } catch (e) { }
             });
 
-            await collector.on("end", (collected) => {
+            await playCollector.on("end", (collected) => {
                 if (collected.size === 0) {
                     interaction.followUp({
                         content: "You did not respond in time!",
@@ -119,6 +119,81 @@ configs.client.on("interactionCreate", async (interaction) => {
                 await interaction.deferReply({ ephemeral: isEphemeral });
                 await createPlayQueue();
                 botResponse = "Started playing movies";
+                await interaction.followUp({ content: botResponse, ephemeral: isEphemeral });
+            } catch (e) { }
+
+            break;
+        case 'search':
+
+            await interaction.reply("what movie do you want to search for?", {
+                ephermal: isEphemeral,
+            });
+
+            const searchFilter = (response) => {
+                return response.author.id === interaction.user.id;
+            };
+
+            const searchCollector = await interaction.channel.createMessageCollector({
+                filter: searchFilter,
+                max: 1,
+                time: 15000,
+            });
+
+            await searchCollector.on("collect", async (query) => {
+
+                query = query.content;
+                try {
+                    let result = await search(query);
+                    result = result.Metadata;
+                    
+                    let movies = [];
+                    for(const item of result){
+
+                        if(!item){
+                            continue;
+                        }
+
+                        if(item.type !== 'movie'){
+                            continue;
+                        }
+
+                        if(movies.length >= 5){
+                            continue;
+                        }
+
+                        movies.push([item.title, item.year]);
+                    }
+
+                    botResponse = 'Results:\n\n';
+                    for(const movie of movies){
+                        botResponse += `${movie[0]}: ${movie[1]}\n`;
+                    }
+                    await interaction.followUp({ content: botResponse, ephemeral: isEphemeral });
+                } catch (e) { }
+            });
+
+            await searchCollector.on("end", (collected) => {
+                if (collected.size === 0) {
+                    interaction.followUp({
+                        content: "You did not respond in time!",
+                        ephemeral: isEphemeral,
+                    });
+                }
+            });
+
+            break;
+        case 'now': 
+
+            try {
+                await interaction.deferReply({ ephemeral: isEphemeral });
+                let movie = await nowPlaying();
+
+                if(movie.length < 1){
+                    botResponse = `Not currently playing anything`;
+                } else {
+                    botResponse = `Now playing: ${movie[0].title}`;
+                }
+
                 await interaction.followUp({ content: botResponse, ephemeral: isEphemeral });
             } catch (e) { }
 
@@ -184,5 +259,25 @@ const createPlayQueue = async (key) => {
 
     return res.data.MediaContainer.playQueueID;
 };
+
+const nowPlaying = async () => {
+    let res = await axios({
+        method: "get",
+        // timeout: 2000,
+        url: `http://${process.env.IP}:${process.env.PORT}/status/sessions`,
+        headers: {
+            "X-Plex-Token": process.env.PLEX_TOKEN,
+            Accept: "application/json",
+        },
+        params: {
+            type: "video",
+            commandID: 0,
+            "X-Plex-Target-Client-Identifier": process.env.PLEX_CLIENT_ID,
+            // ...params,
+        },
+    });
+
+    return res.data.MediaContainer.Metadata;
+}
 
 configs.client.login(process.env.TOKEN);
